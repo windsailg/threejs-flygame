@@ -308,14 +308,14 @@ let modelUFO, modelDarkUFO
 const load3DModels = () => {
   const loader = new GLTFLoader()
   loader.load(
-    '../models/retro_ufo/scene.gltf',
+    './models/retro_ufo/scene.gltf',
     (gltf) => {
       modelUFO = gltf.scene
       modelUFO.scale.setScalar(10)
       modelUFO.position.y = 10
       scene.add(modelUFO)
       setObjectMovement()
-      const mixer = new THREE.AnimationMixer(gltf.scene)
+      // const mixer = new THREE.AnimationMixer(gltf.scene)
       // console.warn('mixer', mixer)
       // mixer.clipAction(gltf.animations[0]).play()
       // const mixer = new THREE.AnimationMixer(model)
