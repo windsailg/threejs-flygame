@@ -32,10 +32,10 @@ const texture_lapis = {
 
 const scalar = (index) => {
   const isMinus = Math.random() < 0.5
-  const value = Math.floor(Math.random() * (30 * index) + 50)
+  const value = Math.floor(Math.random() * (80 * index) + 8)
   return isMinus ? -value : value
 }
-const sizeScalar = (scalar) => Math.floor(Math.random() * scalar) + 2
+const sizeScalar = (scalar) => Math.floor(Math.random() * scalar) + 1 // ~ scalar(max)
 
 // Create scene
 let scene, camera, renderer
@@ -107,7 +107,7 @@ const createSphare = () => {
   // }
   materialPhong = new THREE.MeshPhongMaterial(PhongOption) // 材質類型
   // materialStandard = new THREE.MeshStandardMaterial(StandardOption)
-  const geometry = new THREE.SphereGeometry(12, 64, 64) // 多面體類型
+  const geometry = new THREE.SphereGeometry(6, 64, 64) // 多面體類型
   spherePhong = new THREE.Mesh(geometry, materialPhong) // 建立網絡
   // sphereStandard = new THREE.Mesh(geometry, materialStandard)
   scene.add(spherePhong)
@@ -116,7 +116,7 @@ const createSphare = () => {
 const createBoxes = () => {
   // 方塊
   const BoxOption = {
-    color: '#ffffff',
+    color: '#999999',
     // map,
     // envMap,
     // alphaMap,
@@ -126,17 +126,22 @@ const createBoxes = () => {
     // combine: 1,
     // refractionRatio: 0,
   }
-  const size = sizeScalar(30)
+  const size = sizeScalar(7)
   // scene.add(cube)
-  for (let i = 0; i <= 10; i++) {
-    const geoBox = new THREE.BoxGeometry(size, size, size) // 長寬高
-    const geoPhone = new THREE.SphereGeometry(size, size, size) // 長寬高
-    const materialBox = new THREE.MeshPhongMaterial(BoxOption)
-    const cube = new THREE.Mesh(geoBox, materialBox)
-    cube.name = `cube-${i}`
-    cube.position.set(scalar(i), scalar(i), scalar(i))
-    cube.rotation.set(scalar(i), scalar(i), scalar(i))
-    scene.add(cube)
+  setInterval(() => {
+    generateComet()
+  }, 1000)
+  const generateComet = () => {
+    for (let i = 0; i <= 5; i++) {
+      const geoBox = new THREE.BoxGeometry(size, size, size) // 長寬高
+      const geoPhone = new THREE.SphereGeometry(size, size, size) // 長寬高
+      const materialBox = new THREE.MeshPhongMaterial(BoxOption)
+      const cube = new THREE.Mesh(geoBox, materialBox)
+      cube.name = `cube-${i}`
+      cube.position.set(scalar(i), scalar(i), -1250)
+      cube.rotation.set(scalar(i), scalar(i), scalar(i))
+      scene.add(cube)
+    }
   }
 }
 
@@ -152,47 +157,8 @@ const createSkySphare = () => {
   scene.add(skySphere)
 }
 
-const createSky = () => {
-  const sky = new Sky()
-  sky.scale.setScalar(10000) // Specify the dimensions of the skybox
-  scene.add(sky)
-}
-// createSky()
-
-let modelUFO, modelDarkUFO
-const load3DModels = () => {
-  const loader = new GLTFLoader()
-  loader.load(
-    '../models/ufo/scene.gltf',
-    (gltf) => {
-      modelUFO = gltf.scene
-      modelUFO.scale.setScalar(2)
-      modelUFO.position.y = 50
-      // model.rotation.y = Math.PI / 2
-      scene.add(modelUFO)
-      const mixer = new THREE.AnimationMixer(model)
-      const clip = THREE.AnimationClip.findByName(model.animations, 'run')
-      if (clip) {
-        const action = mixer.clipAction(clip)
-        action.play()
-      }
-      mixers.push(mixer)
-    },
-    (xhr) => {
-      console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-      console.warn('modelUFO', xhr)
-    },
-    (error) => {
-      console.warn('An error happened')
-    },
-  )
-}
-
 const createEnvLight = () => {
-  // const lensFlare = new THREE.LensFlare(-1, 0, '#0cdab2')
-  // const lensFlare = new THREE.LensFlare()
-  // scene.add(lensFlare)
-  const ambientLight = new THREE.AmbientLight('#222222')
+  const ambientLight = new THREE.AmbientLight('#ffffff')
   scene.add(ambientLight)
 }
 
@@ -201,6 +167,18 @@ const createSpotLight = () => {
   spoltLight.position.set(1000, 600, 400) // 設定光源位置
   spoltLight.target = spherePhong // 設定光源目標
   scene.add(spoltLight)
+}
+
+const createHemisphereLight = () => {
+  const hemiLight = new THREE.HemisphereLight('#ffffff', '#ffffff')
+  hemiLight.position.set(0, 10, -30)
+  scene.add(hemiLight)
+}
+
+const createDirectionalLight = () => {
+  const dirLight = new THREE.DirectionalLight('#ffffff')
+  dirLight.position.set(-3, 10, -10)
+  scene.add(dirLight)
 }
 
 let clock
@@ -251,22 +229,24 @@ const setGUI = () => {
 
 const animate = () => {
   requestAnimationFrame(animate)
-  spherePhong.rotation.y += 0.0005
-  skySphere.rotation.x += 0.0001
-  skySphere.rotation.y += 0.0002
-  skySphere.position.x += 0.1
-  skySphere.position.x = camera.position.x
-  skySphere.position.y = camera.position.y
-  skySphere.position.z = camera.position.z
+  // spherePhong.rotation.y += 0.0005
+  skySphere.rotation.x += 0.0003
+  skySphere.rotation.y += 0.000001
+  if (modelUFO) modelUFO.rotation.y += 0.04
   scene.children.forEach((c) => {
     const name = c.name.split('-')
     if (name[0] === 'cube') {
-      c.rotation.x += 0.0012
-      c.rotation.y += 0.0006
-      c.rotation.z += 0.0004
+      c.rotation.x += 0.01
+      c.rotation.y += 0.02
+      c.rotation.z += 0.03
+      // c.position.x -= 0.01
+      // c.position.y -= 0.02
+      c.position.z += 2
+    }
+    if (c.position.z >= 500) {
+      scene.remove(c)
     }
   })
-  flyControls.update(0.005)
   renderer.autoClear = false
   renderer.clear()
   renderer.render(scene, camera)
@@ -280,35 +260,108 @@ const setActions = () => {
     // }
   }
   const traceDate = () => {
-    console.warn('clock delta', clock.getDelta())
+    // console.warn('clock delta', clock.getDelta())
   }
   document.onkeyup = traceDate
 }
 
-const traceTarget = () => {
-  setInterval(() => {
-    console.warn('skySphere rotation', { ...skySphere.rotation })
-  }, 2000)
+const setObjectMovement = () => {
+  const target = modelUFO
+  let xSpeed = 3
+  let ySpeed = 3
+  document.addEventListener(
+    'keydown',
+    function onDocumentKeyDown(event) {
+      const keyCode = event.which
+      if (keyCode === 38) {
+        // 上
+        target.position.y += ySpeed
+      }
+      if (keyCode === 40) {
+        // 下
+        target.position.y -= ySpeed
+      }
+      if (keyCode === 37) {
+        // 左
+        target.position.x -= xSpeed
+      }
+      if (keyCode === 39) {
+        // 右
+        target.position.x += xSpeed
+      }
+      console.warn('click', keyCode)
+    },
+    false,
+  )
+  document.addEventListener('mousemove', function (e) {
+    const ww = window.innerWidth
+    const wh = window.innerHeight
+    const position3DX = e.clientX - ww / 2
+    const position3DY = -(e.clientY - wh / 2)
+    target.position.x = position3DX / 16
+    target.position.y = position3DY / 16
+    // console.warn(position3DX, position3DY)
+  })
 }
+
+let modelUFO, modelDarkUFO
+const load3DModels = () => {
+  const loader = new GLTFLoader()
+  loader.load(
+    '../models/retro_ufo/scene.gltf',
+    (gltf) => {
+      modelUFO = gltf.scene
+      modelUFO.scale.setScalar(10)
+      modelUFO.position.y = 10
+      scene.add(modelUFO)
+      setObjectMovement()
+      const mixer = new THREE.AnimationMixer(gltf.scene)
+      // console.warn('mixer', mixer)
+      // mixer.clipAction(gltf.animations[0]).play()
+      // const mixer = new THREE.AnimationMixer(model)
+      // const clip = THREE.AnimationClip.findByName(model.animations, 'run')
+      // if (clip) {
+      //   const action = mixer.clipAction(clip)
+      //   action.play()
+      // }
+      // mixers.push(mixer)
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+      console.warn('An error happened')
+    },
+  )
+}
+
+const traceTarget = () => {
+  console.warn('scene', scene)
+  // setInterval(() => {
+  //   console.warn('skySphere rotation', { ...skySphere.rotation })
+  // }, 2000)
+}
+
 const init = () => {
   createScene()
   createCamera()
   createRenderer()
-  createSphare()
+  // createSphare()
   createBoxes()
-  // load3DModels()
+  load3DModels()
   createSkySphare()
   createEnvLight()
-  createSpotLight()
-  setClock()
+  // createSpotLight()
+  createHemisphereLight()
+  createDirectionalLight()
+  // setClock()
   // setControls()
-  setFlyControls()
-  setGUI()
+  // setFlyControls()
+  // setGUI()
   animate()
   setActions()
+  // setObjectMovement()
   traceTarget()
 }
 
 init()
-
-console.warn('scene', scene)
