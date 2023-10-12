@@ -300,7 +300,7 @@ const setObjectMovement = () => {
     const position3DY = -(e.clientY - window.innerHeight / 2)
     new TWEEN.Tween(target.position)
       .to({ x: position3DX / 24, y: position3DY / 24 }, 300)
-      .easing(TWEEN.Easing.Quintic.Out)
+      .easing(TWEEN.Easing.Circular.Out)
       .start()
   })
 }
