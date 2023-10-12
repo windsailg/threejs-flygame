@@ -1,0 +1,11 @@
+Model Information:
+* title:	rock LowPoly
+* source:	https://sketchfab.com/3d-models/rock-lowpoly-e8035f8cadd64a8eb26780676850e8e8
+* author:	andreadev3d (https://sketchfab.com/andreadev)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "rock LowPoly" (https://sketchfab.com/3d-models/rock-lowpoly-e8035f8cadd64a8eb26780676850e8e8) by andreadev3d (https://sketchfab.com/andreadev) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

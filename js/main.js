@@ -16,7 +16,7 @@ const CONSTANTS = {
 }
 
 const textureLoader = new THREE.TextureLoader()
-const backgroundTexture = textureLoader.load('textrue/00.png')
+const backgroundTexture = textureLoader.load('textrue/000.jpg')
 const texture_moon = {
   // map: textureLoader.load('textrue/moon/moon_high.jpg'),
   // normalMap: textureLoader.load('textrue/moon/moon_NORM.jpg'),
@@ -32,7 +32,7 @@ const texture_lapis = {
 
 const scalar = (index) => {
   const isMinus = Math.random() < 0.5
-  const value = Math.floor(Math.random() * (80 * index) + 8)
+  const value = Math.floor(Math.random() * (20 * index) + 2.5)
   return isMinus ? -value : value
 }
 const sizeScalar = (scalar) => Math.floor(Math.random() * scalar) + 1 // ~ scalar(max)
@@ -116,7 +116,7 @@ const createSphare = () => {
 const createBoxes = () => {
   // 方塊
   const BoxOption = {
-    color: '#999999',
+    color: '#3c3c3c',
     // map,
     // envMap,
     // alphaMap,
@@ -132,15 +132,17 @@ const createBoxes = () => {
     generateComet()
   }, 1000)
   const generateComet = () => {
-    for (let i = 0; i <= 5; i++) {
-      const geoBox = new THREE.BoxGeometry(size, size, size) // 長寬高
-      const geoPhone = new THREE.SphereGeometry(size, size, size) // 長寬高
-      const materialBox = new THREE.MeshPhongMaterial(BoxOption)
-      const cube = new THREE.Mesh(geoBox, materialBox)
-      cube.name = `cube-${i}`
-      cube.position.set(scalar(i), scalar(i), -1250)
-      cube.rotation.set(scalar(i), scalar(i), scalar(i))
-      scene.add(cube)
+    for (let i = 0; i <= 6; i++) {
+      // const geoBox = new THREE.BoxGeometry(size, size, size) // 長寬高
+      // const geoPhone = new THREE.SphereGeometry(size, size, size) // 長寬高
+      // const materialBox = new THREE.MeshPhongMaterial(BoxOption)
+      // const cube = new THREE.Mesh(geoBox, materialBox)
+      let rock = modelRock.clone()
+      rock.name = `cube-${i}`
+      rock.scale.setScalar(sizeScalar(3) * 0.3)
+      rock.position.set(scalar(i), scalar(i), -1250)
+      rock.rotation.set(scalar(i), scalar(i), scalar(i))
+      scene.add(rock)
     }
   }
 }
@@ -154,11 +156,12 @@ const createSkySphare = () => {
   backgroundTexture.encoding = THREE.sRGBEncoding
   materialSky = new THREE.MeshBasicMaterial({ map: backgroundTexture })
   skySphere = new THREE.Mesh(skyGeometry, materialSky)
+  skySphere.rotation.z = 1.2
   scene.add(skySphere)
 }
 
 const createEnvLight = () => {
-  const ambientLight = new THREE.AmbientLight('#ffffff')
+  const ambientLight = new THREE.AmbientLight('#bbbbbb')
   scene.add(ambientLight)
 }
 
@@ -170,7 +173,7 @@ const createSpotLight = () => {
 }
 
 const createHemisphereLight = () => {
-  const hemiLight = new THREE.HemisphereLight('#ffffff', '#ffffff')
+  const hemiLight = new THREE.HemisphereLight('#dbdbdb', '#868686')
   hemiLight.position.set(0, 10, -30)
   scene.add(hemiLight)
 }
@@ -230,18 +233,18 @@ const setGUI = () => {
 const animate = () => {
   requestAnimationFrame(animate)
   // spherePhong.rotation.y += 0.0005
-  skySphere.rotation.x += 0.0003
-  skySphere.rotation.y += 0.000001
-  if (modelUFO) modelUFO.rotation.y += 0.04
+  skySphere.rotation.x += 0.000004
+  skySphere.rotation.y += 0.0001
+  if (modelUFO) {
+    modelUFO.rotation.y += 0.04
+  }
   scene.children.forEach((c) => {
     const name = c.name.split('-')
     if (name[0] === 'cube') {
       c.rotation.x += 0.01
       c.rotation.y += 0.02
       c.rotation.z += 0.03
-      // c.position.x -= 0.01
-      // c.position.y -= 0.02
-      c.position.z += 2
+      c.position.z += 1
     }
     if (c.position.z >= 500) {
       scene.remove(c)
@@ -304,35 +307,25 @@ const setObjectMovement = () => {
   })
 }
 
-let modelUFO, modelDarkUFO
-const load3DModels = () => {
+let modelUFO, modelRock
+const load3DModels = async () => {
   const loader = new GLTFLoader()
-  loader.load(
-    './models/retro_ufo/scene.gltf',
-    (gltf) => {
-      modelUFO = gltf.scene
-      modelUFO.scale.setScalar(10)
-      modelUFO.position.y = 10
-      scene.add(modelUFO)
-      setObjectMovement()
-      // const mixer = new THREE.AnimationMixer(gltf.scene)
-      // console.warn('mixer', mixer)
-      // mixer.clipAction(gltf.animations[0]).play()
-      // const mixer = new THREE.AnimationMixer(model)
-      // const clip = THREE.AnimationClip.findByName(model.animations, 'run')
-      // if (clip) {
-      //   const action = mixer.clipAction(clip)
-      //   action.play()
-      // }
-      // mixers.push(mixer)
-    },
-    (xhr) => {
-      console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-      console.warn('An error happened')
-    },
-  )
+  const ufoPath = './models/retro_ufo/scene.gltf'
+  const rockPath = './models/rock/scene.gltf'
+  const gltfUFO = await loader.loadAsync(ufoPath)
+  const gltfRock = await loader.loadAsync(rockPath)
+  modelRock = gltfRock.scene
+  modelUFO = gltfUFO.scene
+  modelUFO.scale.setScalar(5)
+  modelUFO.position.y = 10
+  modelUFO.rotation.x = 0.2
+  modelUFO.rotation.z = 0.17
+  scene.add(modelUFO)
+  setObjectMovement()
+  return {
+    status: 'success',
+    models: [modelRock, modelUFO],
+  }
 }
 
 const traceTarget = () => {
@@ -342,13 +335,19 @@ const traceTarget = () => {
   // }, 2000)
 }
 
-const init = () => {
+const loadFinish = () => {
+  const loading = document.getElementById('Loading')
+  loading.classList.add('is__loaded')
+}
+
+const init = async () => {
   createScene()
   createCamera()
   createRenderer()
   // createSphare()
+  const models = await load3DModels()
   createBoxes()
-  load3DModels()
+  console.warn('models', models)
   createSkySphare()
   createEnvLight()
   // createSpotLight()
@@ -362,6 +361,7 @@ const init = () => {
   setActions()
   // setObjectMovement()
   traceTarget()
+  loadFinish()
 }
 
 init()

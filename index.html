@@ -13,9 +13,59 @@
         overflow: hidden;
         cursor: none;
       }
+      section {
+        margin: 0;
+        padding: 0;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #959595;
+        /* cursor: pointer; */
+        transition: 0.3s linear;
+        z-index: 100;
+        background-color: #262626;
+        transition: 300ms opacity ease-in-out;
+      }
+      #Loading.is__loaded {
+        opacity: 0;
+      }
+      .loader-4 {
+        width: 64px;
+        height: 64px;
+        border: 3px solid #cfcfcf;
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+        animation: rotation 1.2s ease-in infinite;
+      }
+      .loader-4:after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(64px - 8px);
+        height: calc(64px - 8px);
+        border-radius: 50%;
+        border: 3px solid;
+        border-color: #4cc898 transparent;
+      }
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
+    <section id="Loading"><span class="loader-4"></span></section>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>
