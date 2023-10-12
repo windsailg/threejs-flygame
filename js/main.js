@@ -2,9 +2,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.m
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js'
 import { FlyControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/FlyControls.js'
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js'
-// import { FlyControls } from 'three/addons/controls/FlyControls.js'
 import { GUI } from './lil-gui.module.min.js'
-// import { Sky } from 'https://cdn.jsdelivr.net/npm/three-skybox@0.0.2/index.min.js'
 
 const CONSTANTS = {
   CAMERA_FOV: 50,
@@ -188,7 +186,6 @@ let clock
 const setClock = () => {
   clock = new THREE.Clock()
 }
-setClock()
 
 const setControls = () => {
   const controls = new OrbitControls(camera, renderer.domElement)
@@ -202,7 +199,7 @@ const setControls = () => {
 let flyControls
 const setFlyControls = () => {
   flyControls = new FlyControls(camera, renderer.domElement)
-  flyControls.movementSpeed = 300
+  flyControls.movementSpeed = 0
   flyControls.domElement = renderer.domElement
   flyControls.rollSpeed = Math.PI / 6
   flyControls.autoForward = false
@@ -233,6 +230,7 @@ const setGUI = () => {
 const animate = () => {
   requestAnimationFrame(animate)
   // spherePhong.rotation.y += 0.0005
+  TWEEN.update()
   skySphere.rotation.x += 0.000004
   skySphere.rotation.y += 0.0001
   if (modelUFO) {
@@ -272,38 +270,38 @@ const setObjectMovement = () => {
   const target = modelUFO
   let xSpeed = 3
   let ySpeed = 3
-  document.addEventListener(
-    'keydown',
-    function onDocumentKeyDown(event) {
-      const keyCode = event.which
-      if (keyCode === 38) {
-        // 上
-        target.position.y += ySpeed
-      }
-      if (keyCode === 40) {
-        // 下
-        target.position.y -= ySpeed
-      }
-      if (keyCode === 37) {
-        // 左
-        target.position.x -= xSpeed
-      }
-      if (keyCode === 39) {
-        // 右
-        target.position.x += xSpeed
-      }
-      console.warn('click', keyCode)
-    },
-    false,
-  )
-  document.addEventListener('mousemove', function (e) {
-    const ww = window.innerWidth
-    const wh = window.innerHeight
-    const position3DX = e.clientX - ww / 2
-    const position3DY = -(e.clientY - wh / 2)
-    target.position.x = position3DX / 16
-    target.position.y = position3DY / 16
-    // console.warn(position3DX, position3DY)
+  // document.addEventListener(
+  //   'keydown',
+  //   function onDocumentKeyDown(event) {
+  //     const keyCode = event.which
+  //     if (keyCode === 38) {
+  //       // 上
+  //       target.position.y += ySpeed
+  //     }
+  //     if (keyCode === 40) {
+  //       // 下
+  //       target.position.y -= ySpeed
+  //     }
+  //     if (keyCode === 37) {
+  //       // 左
+  //       target.position.x -= xSpeed
+  //     }
+  //     if (keyCode === 39) {
+  //       // 右
+  //       target.position.x += xSpeed
+  //     }
+  //     console.warn('click', keyCode)
+  //   },
+  //   false,
+  // )
+
+  document.addEventListener('mousemove', (e) => {
+    const position3DX = e.clientX - window.innerWidth / 2
+    const position3DY = -(e.clientY - window.innerHeight / 2)
+    new TWEEN.Tween(target.position)
+      .to({ x: position3DX / 24, y: position3DY / 24 }, 300)
+      .easing(TWEEN.Easing.Quintic.Out)
+      .start()
   })
 }
 
@@ -355,7 +353,8 @@ const init = async () => {
   createDirectionalLight()
   // setClock()
   // setControls()
-  // setFlyControls()
+  // setClock()
+  setFlyControls()
   // setGUI()
   animate()
   setActions()
