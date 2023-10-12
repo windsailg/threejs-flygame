@@ -12,6 +12,7 @@
         background-color: #444444;
         overflow: hidden;
         cursor: none;
+        user-select: none;
       }
       section {
         margin: 0;
@@ -64,7 +65,7 @@
       }
     </style>
   </head>
-  <body>
+  <body oncontextmenu="return false">
     <section id="Loading"><span class="loader-4"></span></section>
     <script type="module" src="js/main.js"></script>
   </body>
